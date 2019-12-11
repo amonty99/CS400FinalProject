@@ -78,13 +78,13 @@ public class Main extends Application {
 		TextInputDialog addDialog = new TextInputDialog("Enter name");
 		addDialog.setTitle("Add a user");
 		addDialog.show();
-		addDialog.getEditor().setOnAction(event -> {
+		addDialog.getEditor().setOnAction(event -> { //user hits enter key
 			String result = addDialog.getEditor().getText();
 			network.addPerson(result);
 			if(centralUser == null) {
 				centralUser = new Person(result);
 			}
-			System.out.println(result);
+			commandLog.add("a " + result);
 			addDialog.close();
 			//do something else with it
 			try {
@@ -100,25 +100,50 @@ public class Main extends Application {
 	 * Dialog to take in user input, and add a new friendship
 	 */
 	public void addFriendDialog(Stage primaryStage) throws Exception {
-		TextInputDialog addDialog = new TextInputDialog("Enter name");
-		addDialog.setTitle("Add a user");
+		Stage addDialog = new Stage();
+		Scene temp;
+		BorderPane root = new BorderPane();
+		addDialog.setTitle("Add a friendship");
+		Button ok = new Button("OK");
+		Button cancel = new Button("Cancel");
+		TextField user1 = new TextField("Enter a user");
+		TextField user2 = new TextField("Enter a user");
+		HBox top = new HBox();
+		HBox bot = new HBox();
+		top.getChildren().add(user1);
+		top.getChildren().add(user2);
+		bot.getChildren().add(ok);
+		bot.getChildren().add(cancel);
+		root.setTop(top);
+		root.setCenter(bot);
+		temp = new Scene(root, 100, 100);
+		addDialog.setScene(temp);
 		addDialog.show();
-		addDialog.getEditor().setOnAction(event -> {
-			String result = addDialog.getEditor().getText();
-			//network.addFriend(person1, person2);
-			if(centralUser == null) {
-				centralUser = new Person(result);
-			}
-			System.out.println(result);
+		ok.setOnAction(event -> {
+			String f1 = user1.getText();
+			String f2 = user2.getText();
 			addDialog.close();
-			//do something else with it
 			try {
-				start(primaryStage);
+				addFriendHandler(f1, f2, primaryStage);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
+		cancel.setOnAction(event -> {
+			addDialog.close();
+		});
+	}
+
+	private void addFriendHandler(String f1, String f2, Stage primaryStage) {
+		network.addFriend(f1, f2);
+		commandLog.add("a " + f1 + " " + f2);
+		try {
+			start(primaryStage);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -128,7 +153,7 @@ public class Main extends Application {
 		TextInputDialog addDialog = new TextInputDialog("Enter a name");
 		addDialog.setTitle("Search for a user");
 		addDialog.show();
-		addDialog.getEditor().setOnAction(event -> {
+		addDialog.getEditor().setOnAction(event -> { //user hits enter key
 			String result = addDialog.getEditor().getText();
 			//network.addPerson(result);
 			System.out.println(result);
@@ -144,7 +169,7 @@ public class Main extends Application {
 		TextInputDialog removeDialog = new TextInputDialog("Enter a name");
 		removeDialog.setTitle("Remove a user");
 		removeDialog.show();
-		removeDialog.getEditor().setOnAction(event -> {
+		removeDialog.getEditor().setOnAction(event -> { //user hits enter key
 			String result = removeDialog.getEditor().getText();
 			try {
 				removeHandler(result, primaryStage);
@@ -178,13 +203,14 @@ public class Main extends Application {
 		bot.getChildren().add(ok);
 		bot.getChildren().add(cancel);
 		root.setTop(top);
-		root.setBottom(bot);
-		temp = new Scene(root, 100, 200);
+		root.setCenter(bot);
+		temp = new Scene(root, 100, 100);
 		removeDialog.setScene(temp);
 		removeDialog.show();
 		ok.setOnAction(event -> {
 			String f1 = user1.getText();
 			String f2 = user2.getText();
+			removeDialog.close();
 			try {
 				removeRelationHandler(f1, f2, primaryStage);
 			} catch (Exception e) {
@@ -212,7 +238,7 @@ public class Main extends Application {
 	public void removeHandler(String name, Stage primaryStage) throws Exception {
 		network.removePerson(name);
 		start(primaryStage);
-		System.out.println("Success");
+		//.System.out.println("Success");
 	}
 
 	/*
@@ -222,7 +248,7 @@ public class Main extends Application {
 		TextInputDialog removeDialog = new TextInputDialog("Enter a file name");
 		removeDialog.setTitle("Load a network");
 		removeDialog.show();
-		removeDialog.getEditor().setOnAction(event -> {
+		removeDialog.getEditor().setOnAction(event -> { //user hits enter key
 			String result = removeDialog.getEditor().getText();
 			//Call file loader
 			System.out.println(result);
@@ -244,11 +270,24 @@ public class Main extends Application {
 		TextInputDialog removeDialog = new TextInputDialog("Enter a file name");
 		removeDialog.setTitle("Save the network");
 		removeDialog.show();
-		removeDialog.getEditor().setOnAction(event -> {
+		removeDialog.getEditor().setOnAction(event -> { //user hits enter key
 			String result = removeDialog.getEditor().getText();
 			//Call file saver
 			System.out.println(result);
 			removeDialog.close();
+			//do something else with it
+		});
+	}
+	
+	private void pathDialog(Stage primaryStage) {
+		TextInputDialog pathDialog = new TextInputDialog("Enter a username");
+		pathDialog.setTitle("Save the network");
+		pathDialog.show();
+		pathDialog.getEditor().setOnAction(event -> { //user hits enter key
+			String result = pathDialog.getEditor().getText();
+			//Call file saver
+			System.out.println(result);
+			pathDialog.close();
 			//do something else with it
 		});
 	}
@@ -307,7 +346,7 @@ public class Main extends Application {
 			//GUI elements for controls
 			VBox rightBox = new VBox();
 			Button clear = new Button("Clear");
-			clear.setMinWidth(110);
+			clear.setMinWidth(120);
 			clear.setOnAction(event -> {
 				try {
 					clearHandler(primaryStage);
@@ -316,7 +355,7 @@ public class Main extends Application {
 				}
 			});
 			Button addUser = new Button("Add user");
-			addUser.setMinWidth(110);
+			addUser.setMinWidth(120);
 			addUser.setOnAction(event -> {
 				try {
 					addUserDialog(primaryStage);
@@ -325,7 +364,7 @@ public class Main extends Application {
 				}
 			});
 			Button addFriend = new Button("Add friendship");
-			addFriend.setMinWidth(110);
+			addFriend.setMinWidth(120);
 			addFriend.setOnAction(event -> {
 				try {
 					addFriendDialog(primaryStage);
@@ -334,7 +373,7 @@ public class Main extends Application {
 				}
 			});
 			Button searchUser = new Button("Search user");
-			searchUser.setMinWidth(110);
+			searchUser.setMinWidth(120);
 			searchUser.setOnAction(event -> {
 				try {
 					searchUserDialog();
@@ -343,7 +382,7 @@ public class Main extends Application {
 				}
 			});
 			Button removeUser = new Button("Remove user");
-			removeUser.setMinWidth(110);
+			removeUser.setMinWidth(120);
 			removeUser.setOnAction(event -> {
 				try {
 					removeDialog(primaryStage);
@@ -351,8 +390,17 @@ public class Main extends Application {
 					e.printStackTrace();
 				}
 			});
+			Button removeFriend = new Button("Remove friendship");
+			removeFriend.setMinWidth(120);
+			removeFriend.setOnAction(event -> {
+				try {
+					removeFriendDialog(primaryStage);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			Button loadFile = new Button("Load File");
-			loadFile.setMinWidth(110);
+			loadFile.setMinWidth(120);
 			loadFile.setOnAction(event -> {
 				try {
 					loadDialog(primaryStage);
@@ -361,7 +409,7 @@ public class Main extends Application {
 				}
 			});
 			Button saveChanges = new Button("Save changes");
-			saveChanges.setMinWidth(110);
+			saveChanges.setMinWidth(120);
 			saveChanges.setOnAction(event -> {
 				try {
 					saveDialog();
@@ -370,12 +418,21 @@ public class Main extends Application {
 				}
 			});
 			Button shortestPath = new Button("Find shortest path");
+			shortestPath.setMinWidth(120);
+			shortestPath.setOnAction(event -> {
+				try {
+					pathDialog(primaryStage);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			shortestPath.setMinWidth(110);
 			rightBox.getChildren().add(clear);
 			rightBox.getChildren().add(addUser);
 			rightBox.getChildren().add(addFriend);
 			rightBox.getChildren().add(searchUser);
 			rightBox.getChildren().add(removeUser);
+			rightBox.getChildren().add(removeFriend);
 			rightBox.getChildren().add(loadFile);
 			rightBox.getChildren().add(saveChanges);
 			rightBox.getChildren().add(shortestPath);
@@ -406,6 +463,7 @@ public class Main extends Application {
 	 */
 	public static void main(String[] args) {
 		network = new NetworkGraph();
+		commandLog = new ArrayList<String>();
 		launch(args);
 	}
 }
